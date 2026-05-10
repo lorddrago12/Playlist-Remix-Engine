@@ -68,3 +68,15 @@ function scoreTracks(tracks) {
   });
 }
 
+function dedupeTracks(tracks) {
+  const seen = new Set();
+
+  return tracks.filter(track => {
+    if (seen.has(track.trackId)) {
+      return false;
+    }
+
+    seen.add(track.trackId);
+    return true;
+  });
+}
