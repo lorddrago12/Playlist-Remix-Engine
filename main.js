@@ -80,3 +80,45 @@ function dedupeTracks(tracks) {
     return true;
   });
 }
+
+function enforceArtistQuota(tracks, maxPerArtist) {
+  const artistCounts = new Map();
+  const result = [];
+
+  for (const track of tracks) {
+    const artist = track.artist;
+
+    const count = artistCounts.get(artist) || 0;
+
+    if (count < maxPerArtist) {
+      result.push(track);
+      artistCounts.set(artist, count + 1);
+    }
+  }
+
+  return result;
+}
+
+function buildSchedule(tracks) {
+  return tracks.map((track, index) => {
+    return {
+      slot: index + 1,
+      trackId: track.trackId
+    };
+  });
+}
+
+function remixPlaylist(playlists, maxPerArtist) {
+  const flattened = flattenPlaylists(playlists);
+
+  const scored = scoreTracks(flattened);
+
+  const deduped = dedupeTracks(scored);
+
+  const quotaApplied = enforceArtistQuota(
+    deduped,
+    maxPerArtist
+  );
+
+  return buildSchedule(quotaApplied);
+}
